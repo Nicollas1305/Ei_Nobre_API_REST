@@ -1,0 +1,218 @@
+const router = require('express').Router()
+const User = require('../models/User')
+const Product = require('../models/Product')
+const multer = require('multer')
+
+// Criar Usuários
+router.post('/user/Create', async (req, res) => {
+    const { name, identity, cpf, address, email, telephone, responsibility, password } = req.body
+
+
+    if (!name) {
+        res.status(422).json({ error: "Nome Obrigatório" })
+        return
+    }
+    const user = {
+        name,
+        identity,
+        cpf,
+        address,
+        email,
+        telephone,
+        responsibility,
+        password
+    }
+
+    try {
+        await User.create(user)
+
+        res.status(201).json({ message: "Usuário criado no sistema." })
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+// Buscar Usuários
+router.get('/user/read', async (req, res) => {
+    try {
+        const users = await User.find()
+        res.status(200).json(users)
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+// Buscar Usuários por ID
+router.get('/user/readId/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+
+        const user = await User.findOne({ _id: id })
+
+
+        if (!user) {
+            res.status(422).json({ message: "Usuário não encontrado." })
+            return
+        }
+        res.status(200).json(user)
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+// Deletar Usuários
+router.delete('/user/delete/:id', async (req, res) => {
+    const id = req.params.id
+
+    const user = await User.findOne({ _id: id })
+
+    if (!user) {
+        res.status(422).json({ message: "Usuário não encontrado. " })
+        return
+    }
+    try {
+        await User.deleteOne({ _id: id })
+        res.status(200).json({ message: "Usuário removido com sucesso!" })
+
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+// Atualizar dados Usuário
+router.patch('/user/update/:id', async (req, res) => {
+    const id = req.params.id
+    const { name, identity, cpf, address, email, telephone, responsibility, password } = req.body
+
+
+    const user = {
+        name,
+        identity,
+        cpf,
+        address,
+        email,
+        telephone,
+        responsibility,
+        password
+    }
+
+    try {
+        const updatedUser = await User.updateOne({
+            _id: id
+        }, user)
+
+        if (updatedUser.matchedCount === 0) {
+            res.status(422).json({ message: "Usuário não encontrado." })
+            return
+        }
+        res.status(200).json(user)
+
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Image Storage
+const Storage = multer.diskStorage({
+    destination: 'productImagesUpload',
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    }
+})
+const productUploads = multer({
+    storage: Storage
+}).single('productImage')
+
+// Criar Produto
+router.post('/product/create', async (req, res) => {
+    productUploads(req, res, (err) => {
+        if (err) {
+            console.log(err)
+        }
+        else {
+            const newProduct = new Product({
+                name: req.body.name,
+                price: req.body.price,
+                size: req.body.size,
+                description: req.body.description,
+                nameImage: req.body.nameImage,
+                images: {
+                    data: req.file.filename,
+                    contentType: 'image/png'
+                },
+            })
+            newProduct.save()
+                .then(() => res.send("Successfullu uploaded")).catch((err) => console.log(err))
+        }
+    })
+})
+
+// Buscar Produtos
+router.get('/product/read', async (req, res) => {
+    try {
+        const products = await Product.find()
+        res.status(200).json(products)
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+// Buscar Produto por ID
+router.get('/product/readId/:id', async (req, res) => {
+    try {
+        const id = req.params.id
+
+        const user = await Product.findOne({ _id: id })
+
+
+        if (!user) {
+            res.status(422).json({ message: "Usuário não encontrado." })
+            return
+        }
+        res.status(200).json(user)
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+// Deletar Produto
+router.delete('/product/delete/:id', async (req, res) => {
+    const id = req.params.id
+
+    const product = await Product.findOne({ _id: id })
+
+    if (!product) {
+        res.status(422).json({ message: "Usuário não encontrado. " })
+        return
+    }
+    try {
+        await Product.deleteOne({ _id: id })
+        res.status(200).json({ message: "Usuário removido com sucesso!" })
+
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+
+
+})
+// Atualizar produto
+
+module.exports = router

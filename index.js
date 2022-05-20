@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+var bodyParser = require('body-parser')
 require('dotenv').config()
 const app = express()
 
@@ -8,12 +9,12 @@ app.use(
         extended: true,
     })
 )
+
 app.use(express.json())
 
 
-const userRoutes = require('./routes/userRoutes')
-app.use('/user', userRoutes)
-
+const Routes = require('./routes/Routes')
+app.use('/', Routes)
 
 
 const DB_USER = process.env.DB_USER

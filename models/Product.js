@@ -1,17 +1,22 @@
+const { contentType } = require('express/lib/response');
 const mongoose = require('mongoose')
 
-const UserSchema = mongoose.Schema({
+const ProductSchema = mongoose.Schema({
     name: {
         type: String,
         require: true
+    },
+    image: {
+        data: Buffer,
+        contentType: String
     },
     price: {
         type: mongoose.Schema.Types.Decimal128,
         require: true
     },
     size: {
-        type: Number,
-        require: true
+        type: Array,
+        require: true,
     },
     description: {
         type: String,
@@ -20,9 +25,17 @@ const UserSchema = mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
+    },
+    images: {
+        data: Buffer,
+        contentType: String,
+    },
+    nameImage: {
+        type: String,
+        require: true
     }
 });
 
-const Product = mongoose.model('Product', UserSchema);
+module.exports = Product = mongoose.model('Product', ProductSchema);
 
 module.exports = Product

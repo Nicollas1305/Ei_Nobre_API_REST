@@ -35,6 +35,3 @@ router.post('/profileUploads', (req, res) => {
         }
     })
 })
-
-
-
