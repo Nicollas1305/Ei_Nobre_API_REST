@@ -2,6 +2,7 @@ const router = require('express').Router()
 const User = require('../models/User')
 const Product = require('../models/Product')
 const multer = require('multer')
+const Requests = require('../models/Requests')
 
 // Criar Usuários
 router.post('/user/Create', async (req, res) => {
@@ -210,9 +211,71 @@ router.delete('/product/delete/:id', async (req, res) => {
             error: error
         })
     }
-
-
 })
 // Atualizar produto
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// Criar Comanda
+router.post('/command/create', async (req, res) => {
+    const { idRequest, products, value } = req.body
+
+    if (!idRequest) {
+        res.status(422).json({ error: "Sem ID PEDIDO" })
+        return
+    }
+
+    const request = {
+        idRequest,
+        products,
+        value
+    }
+    try {
+
+        await Requests.create(request)
+
+        res.status(201).json({ message: "Comanda inserida no sistema!!!." })
+
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+
+})
+
+// Buscar Comanda
+router.get('/command/read', async (req, res) => {
+    try {
+        const request = await Requests.find()
+        res.status(200).json(request)
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
+
+// Deletar Comanda
+router.delete('/command/delete/:id', async (req, res) => {
+    const id = req.params.id
+
+    const command = await Requests.findOne({ _id: id })
+
+    if (!command) {
+        res.status(422).json({ message: "Comanda não encontrada. " })
+        return
+    }
+    try {
+        await Requests.deleteOne({ _id: id })
+        res.status(200).json({ message: "Comanda removida com sucesso!" })
+
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+})
 
 module.exports = router

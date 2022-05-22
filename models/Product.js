@@ -1,14 +1,14 @@
-const { contentType } = require('express/lib/response');
+const { contentType, type } = require('express/lib/response');
 const mongoose = require('mongoose')
 
 const ProductSchema = mongoose.Schema({
+    /*  _id: {
+         type: String,
+         default: ObjectId
+     }, */
     name: {
         type: String,
         require: true
-    },
-    image: {
-        data: Buffer,
-        contentType: String
     },
     price: {
         type: mongoose.Schema.Types.Decimal128,
@@ -28,7 +28,7 @@ const ProductSchema = mongoose.Schema({
     },
     images: {
         data: Buffer,
-        contentType: String,
+        contentType: String
     },
     nameImage: {
         type: String,
