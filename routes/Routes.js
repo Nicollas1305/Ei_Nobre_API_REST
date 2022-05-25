@@ -219,17 +219,20 @@ router.delete('/product/delete/:id', async (req, res) => {
 
 // Criar Comanda
 router.post('/command/create', async (req, res) => {
-    const { idRequest, products, value } = req.body
-
-    if (!idRequest) {
-        res.status(422).json({ error: "Sem ID PEDIDO" })
-        return
-    }
-
+    var pegaProdutos = await Product.find()
+    const {
+        idRequest,
+        createdAt,
+        products = pegaProdutos,
+        quantidade = Object.keys(pegaProdutos).length,
+        valorTotal,
+    } = req.body
     const request = {
         idRequest,
+        createdAt,
         products,
-        value
+        quantidade,
+        valorTotal,
     }
     try {
 
