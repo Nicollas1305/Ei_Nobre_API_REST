@@ -8,13 +8,21 @@ const RequestsSchema = mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
+        require: true
     },
-    value: {
+    products: {
+        type: Array,
+        require: true
+    },
+    quantidade: {
+        type: Number,
+        require: true
+    },
+    valorTotal: {
         type: mongoose.Schema.Types.Decimal128,
         require: true
-    }
+    },
 });
-
 
 
 module.exports = Requests = mongoose.model('Requests', RequestsSchema);
